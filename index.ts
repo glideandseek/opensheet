@@ -1,4 +1,4 @@
-import Bun, { redis, sql } from "bun";
+import Bun, { redis } from "bun";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
@@ -89,23 +89,6 @@ const server = Bun.serve({
       // Create a promise for fetching this data and store it
       const fetchPromise = (async () => {
         try {
-          if (Math.random() < 0.01) {
-            const now = new Date();
-            const hour = new Date(
-              now.getFullYear(),
-              now.getMonth(),
-              now.getDate(),
-              now.getHours()
-            ).toISOString();
-
-            await sql`
-              INSERT INTO analytics (hour, sheet_id, count)
-              VALUES (${hour}, ${id}, 1)
-              ON CONFLICT (hour, sheet_id)
-              DO UPDATE SET count = analytics.count + 1
-            `;
-          }
-
           let sheet = decodeURIComponent(sheetParam.replace(/\+/g, " "));
 
           if (!isNaN(sheet as any)) {
