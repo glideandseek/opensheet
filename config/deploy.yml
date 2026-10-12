@@ -32,6 +32,7 @@ env:
   secret:
     - GOOGLE_API_KEY
     - PGPASSWORD
+    - BLOCKED_SPREADSHEET_IDS
 
 accessories:
   db:

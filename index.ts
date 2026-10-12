@@ -1,6 +1,12 @@
 import Bun, { redis } from "bun";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const BLOCKED_SPREADSHEET_IDS = new Set(
+  (process.env.BLOCKED_SPREADSHEET_IDS ?? "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean)
+);
 
 const ALLOWED_QUERY_PARAMETERS = {
   raw: ["true", "false"],
@@ -25,6 +31,11 @@ const server = Bun.serve({
 
     "/:id/:sheet": async (request) => {
       const { id, sheet: sheetParam } = request.params;
+
+      if (BLOCKED_SPREADSHEET_IDS.has(id)) {
+        return error("Unavailable for legal reasons", 451);
+      }
+
       const url = new URL(request.url);
 
       // Random cache duration between 30-60 seconds to prevent cache stampedes
